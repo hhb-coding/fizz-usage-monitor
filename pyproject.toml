@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fizz-usage-monitor"
+dynamic = ["version"]
+description = "Local synthetic Fizz usage dashboard with SQLite history"
+requires-python = ">=3.10"
+dependencies = ["Flask>=3.1,<4"]
+
+[tool.setuptools.dynamic]
+version = {attr = "fizz_monitor.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["fizz_monitor*"]
+
+[tool.setuptools.package-data]
+fizz_monitor = ["templates/*.html", "static/*.css"]

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fizz Lite Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='lite.css') }}">
+</head>
+<body><div class="page">
+<h1>Fizz Lite</h1>
+<p>synthetic/mock 模拟数据 · America/Toronto</p>
+<p>低流量阈值：{{ threshold }} MB</p>
+<p><a href="{{ url_for('dashboard') }}">返回完整 Dashboard</a> · <a href="{{ url_for('lite') }}">刷新数据</a></p>
+{% if error %}
+<div class="notice unknown" role="alert">{{ error_message }}<br>诊断码：{{ error_code }}</div>
+{% for alias in ['Account A','Account B'] %}
+<div class="account unknown"><h2>{{ alias }}</h2><p class="status">未知：读取失败</p><p>剩余总流量：未知</p><p>最后成功更新时间：未知</p></div>
+{% endfor %}
+{% else %}
+{% for a in data.accounts %}
+<div class="account {{ a.alerts.level }}" id="{{ a.account_id }}">
+<h2>{{ a.alias }}</h2>
+<p class="status" role="status">{{ a.alerts.label }}</p>
+<p>剩余总流量：<strong>{{ a.total_available_mb if a.total_available_mb is not none else '未知' }}{% if a.total_available_mb is not none %} MB{% endif %}</strong></p>
+{% if not a.alerts.reliable and a.total_available_mb is not none %}<p>以上为历史记录，仅供参考，当前流量未知。</p>{% endif %}
+{% for notice in a.alerts.notices %}<p class="notice {{ notice.kind }}">{{ notice.text }}</p>{% endfor %}
+<p class="updated">最后成功更新时间：{{ a.status.last_success_at or '未知' }}</p>
+</div>
+{% else %}<div class="notice unknown">未知：没有账号记录。</div>{% endfor %}
+{% endif %}
+<p>告警独立计算；到期日当天仍有效。页面只读，不自动采集或刷新。</p>
+</div></body></html>

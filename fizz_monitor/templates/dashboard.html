@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fizz 本地用量 Dashboard</title><link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}"></head>
+<body><main><h1>Fizz Usage Monitor</h1><p><a href="{{ url_for('lite') }}">Lite Dashboard（老设备）</a></p><p class="banner">Step 1 · synthetic/mock 模拟演示数据 · 非真实账单或用量</p><p>America/Toronto · 最近三个完整自然日 · MB / CAD</p>
+{% if error %}<p role="alert" class="warning">{{ error_message }}<br>诊断码：{{ error_code }}</p>{% else %}
+<div class="cards">{% for a in data.accounts %}<article><h2>{{ a.alias }}</h2><small>{{ a.account_id }}</small>
+{% if a.stale %}<p class="warning">数据已过期或尚未采集</p>{% endif %}{% if a.status.failed %}<p class="warning">最近采集失败；以下为上次成功数据</p>{% endif %}
+<dl><dt>总可用流量</dt><dd>{{ a.total_available_mb if a.total_available_mb is not none else '缺失' }} MB</dd><dt>Wallet</dt><dd>{{ '$%.2f CAD'|format(a.wallet.balance_cents / 100) if a.wallet else '缺失' }}</dd><dt>套餐月费</dt><dd>{{ '$%.2f CAD'|format(a.plan.amount_cents / 100) if a.plan else '缺失' }}</dd><dt>下次付款日期</dt><dd>{{ a.plan.next_payment_date if a.plan else '缺失' }}</dd></dl>
+<h3>流量有效期</h3><ul>{% for b in a.buckets %}<li>{{ b.kind }}：{{ b.remaining_mb }} / {{ b.total_mb }} MB · {{ b.expires_on }}</li>{% else %}<li>无有效流量记录</li>{% endfor %}</ul>
+<h3>最近三个完整自然日</h3><table><thead><tr><th>日期</th><th>用量 MB</th></tr></thead><tbody>{% for d in a.recent_days %}<tr><td>{{ d.date }}</td><td>{{ d.usage_mb if d.usage_mb is not none else '缺失' }}</td></tr>{% endfor %}</tbody></table>
+<h3>最近 30 天</h3><p>已知用量合计 {{ a.usage_30d_mb }} MB · 有记录 {{ a.known_days }}/30 天（缺失不算零）</p><div class="trend" aria-label="30天用量趋势">{% for d in a.history %}<div class="day"><meter min="0" max="{{ [600,a.history|selectattr('usage_mb','ne',none)|map(attribute='usage_mb')|max|default(600)]|max }}" value="{{ d.usage_mb or 0 }}" title="{{ d.date }}: {{ d.usage_mb if d.usage_mb is not none else '缺失' }} MB"></meter><span>{{ '?' if d.usage_mb is none else d.usage_mb }}</span></div>{% endfor %}</div>
+<div class="history"><h3>30 天历史表格</h3><table><thead><tr><th>日期</th><th>MB</th><th>来源</th></tr></thead><tbody>{% for d in a.history %}<tr><td>{{ d.date }}</td><td>{{ d.usage_mb if d.usage_mb is not none else '缺失' }}</td><td>{{ d.source or '—' }}</td></tr>{% endfor %}</tbody></table></div>
+<p class="updated">最后成功：{{ a.status.last_success_at or '尚无' }}</p></article>{% endfor %}</div>{% endif %}</main></body></html>

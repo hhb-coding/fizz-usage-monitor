@@ -1,0 +1,16 @@
+/* iOS 9 baseline: block layout, no grid/flex/variables/scripts.
+   老设备基础单列布局，不依赖现代布局、变量或脚本。 */
+body{margin:0;background:#f2f4f6;color:#17212b;font-family:Arial,sans-serif;font-size:20px;line-height:1.6}
+.page{max-width:760px;margin:0 auto;padding:16px}
+h1{font-size:32px}h2{font-size:28px;margin:0 0 12px}
+a{color:#124fa0;text-decoration:underline;display:inline-block;padding:8px 0}
+.account{background:#fff;border:3px solid #66717e;padding:18px;margin:20px 0}
+.status{font-size:24px;font-weight:bold}
+.normal{border-color:#17653b}.normal .status{color:#17653b}
+.low{border-color:#a01919;background:#fff1f1}.low .status{color:#a01919}
+.expiry{border-color:#a66a00;background:#fff4ca;color:#694500}
+.unknown{border-color:#66717e;background:#e8edf2}.unknown .status{color:#354252}
+.notice{border:2px solid;padding:12px;margin:14px 0}
+.updated{font-size:18px;word-wrap:break-word}
+strong{font-size:28px}
+@media(max-width:400px){.page{padding:10px}.account{padding:12px}strong{font-size:26px}}
